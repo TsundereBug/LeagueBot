@@ -1,2 +1,10 @@
 *.class
 *.log
+
+# IDEA Files
+.idea/*
+!.idea/*.xml
+.idea/workspace.xml
+
+target
+out

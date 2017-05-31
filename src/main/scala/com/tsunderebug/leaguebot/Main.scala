@@ -2,7 +2,7 @@ package com.tsunderebug.leaguebot
 
 import java.io.{BufferedReader, InputStreamReader}
 
-import com.tsunderebug.leaguebot.listener.{ReadyListener, UserJoinListener}
+import com.tsunderebug.leaguebot.listener.{PMListener, ReadyListener, UserJoinListener, VerificationReactionListiner}
 import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
 
 /**
@@ -14,6 +14,8 @@ object Main {
     .withToken(new BufferedReader(new InputStreamReader(getClass.getResourceAsStream("/token"))).readLine())
     .registerListener(new ReadyListener)
     .registerListener(new UserJoinListener)
+    .registerListener(new PMListener)
+    .registerListener(new VerificationReactionListiner)
     .build()
 
   def main(args: Array[String]): Unit = {

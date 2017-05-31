@@ -1,6 +1,8 @@
 *.class
 *.log
 
+src/main/resources/token
+
 # IDEA Files
 .idea/*
 !.idea/*.xml

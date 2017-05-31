@@ -26,17 +26,18 @@ class VerificationReactionListiner extends IListener[ReactionEvent] {
   override def handle(event: ReactionEvent): Unit = {
     if(!event.getUser.isBot && event.getMessage.getChannel.getLongID == verificationChannel) {
       val u = Main.client.getUserByID(event.getMessage.getContent.substring(0, event.getMessage.getContent.indexOf('\n')).toLong)
-      event.getReaction.getUnicodeEmoji.getAliases.get(0) match {
-        case ":zero:" => u.addRole(Main.client.getRoleByID(levels(0)))
-        case ":one:" => u.addRole(Main.client.getRoleByID(levels(1)))
-        case ":two:" => u.addRole(Main.client.getRoleByID(levels(2)))
-        case ":three:" => u.addRole(Main.client.getRoleByID(levels(3)))
-        case ":four:" => u.addRole(Main.client.getRoleByID(levels(4)))
-        case ":five:" => u.addRole(Main.client.getRoleByID(levels(5)))
-        case ":six:" => u.addRole(Main.client.getRoleByID(levels(6)))
-        case ":seven:" => u.addRole(Main.client.getRoleByID(levels(7)))
-        case ":eight:" => u.addRole(Main.client.getRoleByID(levels(8)))
-        case ":nine:" => u.addRole(Main.client.getRoleByID(levels(9)))
+      val r = event.getReaction.getUnicodeEmoji
+      r match {
+        case _ if r.getAliases.contains(":zero:") => u.addRole(Main.client.getRoleByID(levels(0)))
+        case _ if r.getAliases.contains(":one:") => u.addRole(Main.client.getRoleByID(levels(1)))
+        case _ if r.getAliases.contains(":two:") => u.addRole(Main.client.getRoleByID(levels(2)))
+        case _ if r.getAliases.contains(":three:") => u.addRole(Main.client.getRoleByID(levels(3)))
+        case _ if r.getAliases.contains(":four:") => u.addRole(Main.client.getRoleByID(levels(4)))
+        case _ if r.getAliases.contains(":five:") => u.addRole(Main.client.getRoleByID(levels(5)))
+        case _ if r.getAliases.contains(":six:") => u.addRole(Main.client.getRoleByID(levels(6)))
+        case _ if r.getAliases.contains(":seven:") => u.addRole(Main.client.getRoleByID(levels(7)))
+        case _ if r.getAliases.contains(":eight:") => u.addRole(Main.client.getRoleByID(levels(8)))
+        case _ if r.getAliases.contains(":nine:") => u.addRole(Main.client.getRoleByID(levels(9)))
         case _ => event.getMessage.getChannel.getGuild.kickUser(u, "Failed verification")
       }
       event.getMessage.delete()

@@ -3,6 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/leaguebot.iml" filepath="$PROJECT_DIR$/.idea/modules/leaguebot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/leaguebot.iml" filepath="$PROJECT_DIR$/.idea/modules/leaguebot.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/leaguebot-build.iml" filepath="$PROJECT_DIR$/.idea/modules/leaguebot-build.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/leaguebot-build.iml" filepath="$PROJECT_DIR$/.idea/modules/leaguebot-build.iml" />
     </modules>
   </component>

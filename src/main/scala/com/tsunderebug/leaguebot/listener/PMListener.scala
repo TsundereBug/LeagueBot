@@ -60,7 +60,7 @@ class PMListener extends IListener[MessageReceivedEvent] {
                 mb.appendContent(github)
                 mb.appendContent(" or react with ❎ and send them a PM.")
                 val m = mb.send()
-                for (i <- 0 until 9) RequestBuffer.request(() => m.addReaction(names(i))).get()
+                for (i <- 0 until names.keySet.size) RequestBuffer.request(() => m.addReaction(names(i))).get()
                 RequestBuffer.request(() => m.addReaction("❎"))
               case _ => event.getMessage.reply("Something went wrong, sorry. Try again in about 30 minutes.")
             }

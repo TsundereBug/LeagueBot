@@ -6,6 +6,8 @@ import com.tsunderebug.leaguebot.util.DebugUtil
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.ReadyEvent
 
+import scala.collection.JavaConverters._
+
 /**
   * Created by aprim on 5/30/2017.
   */
@@ -16,6 +18,11 @@ class ReadyListener extends IListener[ReadyEvent] {
   val red = 200
 
   override def handle(event: ReadyEvent): Unit = {
+    event.getClient.getGuilds.forEach(g => {
+      g.getRoles.asScala.foreach(r => {
+        println(r.getName + ":" + r.getStringID)
+      })
+    })
     val spe = new ScheduledThreadPoolExecutor(1)
     spe.scheduleAtFixedRate(() => {
       val ping: Long = DebugUtil.ping

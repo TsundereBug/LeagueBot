@@ -18,18 +18,13 @@ class ReadyListener extends IListener[ReadyEvent] {
   val red = 200
 
   override def handle(event: ReadyEvent): Unit = {
-    event.getClient.getGuilds.forEach(g => {
-      g.getRoles.asScala.foreach(r => {
-        println(r.getName + ":" + r.getStringID)
-      })
-    })
     val spe = new ScheduledThreadPoolExecutor(1)
     spe.scheduleAtFixedRate(() => {
       val ping: Long = DebugUtil.ping
       ping match {
         case x if green until yellow contains x => event.getClient.online("Ping: " + ping + "ms | jointheleague.org")
         case x if yellow until red contains x => event.getClient.idle("Ping: " + ping + "ms | jointheleague.org")
-        case _ => event.getClient.streaming("Slow! Ping: " + ping + "ms | jointheleague.org", "directory")
+        case _ => event.getClient.streaming("Slow! Ping: " + ping + "ms | jointheleague.org", "https://twitch.tv/directory")
       }
     }, 0, 30, TimeUnit.SECONDS)
   }

@@ -25,6 +25,7 @@ class TeamListener extends IListener[MessageReceivedEvent] {
           val channel = event.getGuild.createChannel("team-" + name)
           channel.overrideRolePermissions(event.getGuild.getEveryoneRole, util.EnumSet.noneOf(classOf[Permissions]), util.EnumSet.of(Permissions.READ_MESSAGES))
           channel.overrideRolePermissions(role, util.EnumSet.of(Permissions.READ_MESSAGES), util.EnumSet.noneOf(classOf[Permissions]))
+          members.foreach(_.addRole(role))
           role.changeMentionable(true)
           channel.sendMessage("Created team " + role.mention())
           role.changeMentionable(false)
@@ -33,7 +34,11 @@ class TeamListener extends IListener[MessageReceivedEvent] {
         event.getMessage.reply("Incorrect usage! `-team name mention[ mention[ mention...]]]`")
       }
     } else if (event.getMessage.getContent.startsWith("-leave") && event.getChannel.getName.startsWith("team-")) {
-      event.getMessage.getAuthor.removeRole(event.getGuild.getRolesByName(event.getChannel.getName).get(0))
+      val r = event.getGuild.getRolesByName(event.getChannel.getName).get(0)
+      event.getMessage.getAuthor.removeRole(r)
+      if(event.getGuild.getUsersByRole(r).isEmpty) {
+        event.getChannel.delete()
+      }
     }
   }
 

@@ -13,7 +13,7 @@ class TeamListener extends IListener[MessageReceivedEvent] {
   override def handle(event: MessageReceivedEvent): Unit = {
     if (event.getMessage.getContent.startsWith("-team")) {
       if (event.getMessage.getContent.split("\\s+").length >= 3) {
-        val name = event.getMessage.getFormattedContent.split("\\s+")(1)
+        val name = event.getMessage.getFormattedContent.split("\\s+")(1).toLowerCase
         val members: List[IUser] = event.getAuthor :: event.getMessage.getMentions.asScala.toList
         if (members.exists(_.getRolesForGuild(event.getGuild).asScala.map(_.getName).exists(_.startsWith("team-")))) {
           event.getChannel.sendMessage("You or someone you want to add is already in a team!")

@@ -2,7 +2,7 @@ package com.tsunderebug.leaguebot
 
 import java.io.{BufferedReader, InputStreamReader}
 
-import com.tsunderebug.leaguebot.listener.{PMListener, ReadyListener, UserJoinListener, VerificationReactionListiner}
+import com.tsunderebug.leaguebot.listener._
 import sx.blah.discord.api.{ClientBuilder, IDiscordClient}
 
 /**
@@ -16,6 +16,7 @@ object Main {
     .registerListener(new UserJoinListener)
     .registerListener(new PMListener)
     .registerListener(new VerificationReactionListiner)
+    .registerListener(new TeamListener)
     .build()
 
   def main(args: Array[String]): Unit = {

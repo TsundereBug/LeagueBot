@@ -4,7 +4,7 @@ import java.util
 
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
-import sx.blah.discord.handle.obj.{IUser, Permissions}
+import sx.blah.discord.handle.obj.{IRole, IUser, Permissions}
 
 import scala.collection.JavaConverters._
 
@@ -15,9 +15,9 @@ class TeamListener extends IListener[MessageReceivedEvent] {
       if (event.getMessage.getContent.split("\\s+").length >= 3) {
         val name = event.getMessage.getFormattedContent.split("\\s+")(1)
         val members: List[IUser] = event.getAuthor :: event.getMessage.getMentions.asScala.toList
-        if (members.exists(_.getRolesForGuild(event.getGuild).stream().map(_.getName).filter((s: String) => s.startsWith("team-")).findAny().isPresent)) {
+        if (members.exists(_.getRolesForGuild(event.getGuild).asScala.map(_.getName).exists(_.startsWith("team-")))) {
           event.getChannel.sendMessage("You or someone you want to add is already in a team!")
-        } else if (event.getGuild.getRoles.stream().map(_.getName.substring(5)).filter((s: String) => name.equals(s)).findAny().isPresent) {
+        } else if (event.getGuild.getRoles.asScala.exists((r: IRole) => r.getName.equals("team-" + name))) {
           event.getChannel.sendMessage("Team with that name already exists!")
         } else {
           val role = event.getGuild.createRole()

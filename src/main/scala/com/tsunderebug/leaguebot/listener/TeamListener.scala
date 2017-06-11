@@ -10,20 +10,20 @@ import scala.collection.JavaConverters._
 
 class TeamListener extends IListener[MessageReceivedEvent] {
 
-  override def handle(event: MessageReceivedEvent): Unit = {
-    if (event.getMessage.getContent.startsWith("-team")) {
-      if (event.getMessage.getContent.split("\\s+").length >= 3) {
-        val name = event.getMessage.getFormattedContent.split("\\s+")(1).toLowerCase
-        val members: List[IUser] = event.getAuthor :: event.getMessage.getMentions.asScala.toList
-        if (members.exists(_.getRolesForGuild(event.getGuild).asScala.map(_.getName).exists(_.startsWith("team-")))) {
-          event.getChannel.sendMessage("You or someone you want to add is already in a team!")
-        } else if (event.getGuild.getRoles.asScala.exists((r: IRole) => r.getName.equals("team-" + name))) {
-          event.getChannel.sendMessage("Team with that name already exists!")
+  override def handle(e: MessageReceivedEvent): Unit = {
+    if (e.getMessage.getContent.startsWith("-team ")) {
+      if (e.getMessage.getContent.split("\\s+").length >= 3) {
+        val name = e.getMessage.getFormattedContent.split("\\s+")(1).toLowerCase
+        val members: List[IUser] = e.getAuthor :: e.getMessage.getMentions.asScala.toList
+        if (members.exists(_.getRolesForGuild(e.getGuild).asScala.map(_.getName).exists(_.startsWith("team-")))) {
+          e.getChannel.sendMessage("You or someone you want to add is already in a team!")
+        } else if (e.getGuild.getRoles.asScala.exists((r: IRole) => r.getName.equals("team-" + name))) {
+          e.getChannel.sendMessage("Team with that name already exists!")
         } else {
-          val role = event.getGuild.createRole()
+          val role = e.getGuild.createRole()
           role.changeName("team-" + name)
-          val channel = event.getGuild.createChannel("team-" + name)
-          channel.overrideRolePermissions(event.getGuild.getEveryoneRole, util.EnumSet.noneOf(classOf[Permissions]), util.EnumSet.of(Permissions.READ_MESSAGES))
+          val channel = e.getGuild.createChannel("team-" + name)
+          channel.overrideRolePermissions(e.getGuild.getEveryoneRole, util.EnumSet.noneOf(classOf[Permissions]), util.EnumSet.of(Permissions.READ_MESSAGES))
           channel.overrideRolePermissions(role, util.EnumSet.of(Permissions.READ_MESSAGES), util.EnumSet.noneOf(classOf[Permissions]))
           members.foreach(_.addRole(role))
           role.changeMentionable(true)
@@ -31,13 +31,13 @@ class TeamListener extends IListener[MessageReceivedEvent] {
           role.changeMentionable(false)
         }
       } else {
-        event.getMessage.reply("Incorrect usage! `-team name mention[ mention[ mention...]]]`")
+        e.getMessage.reply("Incorrect usage! `-team name mention[ mention[ mention...]]]`")
       }
-    } else if (event.getMessage.getContent.startsWith("-leave") && event.getChannel.getName.startsWith("team-")) {
-      val r = event.getGuild.getRolesByName(event.getChannel.getName).get(0)
-      event.getMessage.getAuthor.removeRole(r)
-      if(event.getGuild.getUsersByRole(r).isEmpty) {
-        event.getChannel.delete()
+    } else if (e.getMessage.getContent.startsWith("-leave") && e.getChannel.getName.startsWith("team-")) {
+      val r = e.getGuild.getRolesByName(e.getChannel.getName).get(0)
+      e.getMessage.getAuthor.removeRole(r)
+      if(e.getGuild.getUsersByRole(r).isEmpty) {
+        e.getChannel.delete()
       }
     }
   }

@@ -12,10 +12,10 @@ class UserJoinListener extends IListener[UserJoinEvent] {
 
   val unverifiedRole: Long = 319259365662261250L
 
-  override def handle(event: UserJoinEvent): Unit = {
-    event.getUser.addRole(Main.client.getRoleByID(unverifiedRole))
+  override def handle(e: UserJoinEvent): Unit = {
+    e.getUser.addRole(Main.client.getRoleByID(unverifiedRole))
     val mb = new MessageBuilder(Main.client)
-    mb.withChannel(event.getUser.getOrCreatePMChannel())
+    mb.withChannel(e.getUser.getOrCreatePMChannel())
     mb.withContent("Heyo! You will have to be verified by LEAGUE teachers before you can talk in the channels.\n\n" +
       "Please run `-verify [first name] [last name] [github username]` to start the verification process.")
     mb.send()

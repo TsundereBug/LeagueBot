@@ -30,23 +30,23 @@ class VerificationReactionListiner extends IListener[ReactionEvent] {
     "a" -> 318509321996730370L
   )
 
-  override def handle(event: ReactionEvent): Unit = {
-    if (!event.getUser.isBot && event.getMessage.getChannel.getLongID == verificationChannel) {
-      val u = Main.client.getUserByID(event.getMessage.getContent.substring(0, event.getMessage.getContent.indexOf('\n')).toLong)
-      val r = event.getReaction.getUnicodeEmoji
+  override def handle(e: ReactionEvent): Unit = {
+    if (!e.getUser.isBot && e.getMessage.getChannel.getLongID == verificationChannel) {
+      val u = Main.client.getUserByID(e.getMessage.getContent.substring(0, e.getMessage.getContent.indexOf('\n')).toLong)
+      val r = e.getReaction.getUnicodeEmoji
       if (r.getUnicode == "✅") {
         u.removeRole(Main.client.getRoleByID(unverifiedRole))
-        event.getMessage.getReactions.asScala.filter(_.getCount > 1).foreach(r => {
+        e.getMessage.getReactions.asScala.filter(_.getCount > 1).foreach(r => {
           val e = r.getUnicodeEmoji.getAliases.asScala.find(roles.contains).orNull
           if (e != null) {
             u.addRole(Main.client.getRoleByID(roles(e)))
           }
         })
-        event.getMessage.delete()
+        e.getMessage.delete()
       } else if (r.getUnicode == "❎") {
-        event.getGuild.kickUser(u, "Failed verification")
-      } else if (r.getUnicode == "\uD83C\uDD70" && !event.getUser.getPermissionsForGuild(event.getGuild).contains(Permissions.ADMINISTRATOR)) {
-        RequestBuffer.request(() => event.getMessage.removeReaction(event.getUser, event.getReaction))
+        e.getGuild.kickUser(u, "Failed verification")
+      } else if (r.getUnicode == "\uD83C\uDD70" && !e.getUser.getPermissionsForGuild(e.getGuild).contains(Permissions.ADMINISTRATOR)) {
+        RequestBuffer.request(() => e.getMessage.removeReaction(e.getUser, e.getReaction))
       }
     }
   }

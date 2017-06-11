@@ -29,26 +29,26 @@ class PMListener extends IListener[MessageReceivedEvent] {
     9 -> ":nine:"
   )
 
-  override def handle(event: MessageReceivedEvent): Unit = {
-    if (event.getChannel.isPrivate && event.getMessage.getContent.startsWith("-verify")) {
-      if (Main.client.getChannelByID(verificationChannel).getGuild.getUsers.contains(event.getAuthor)) {
-        if (Main.client.getChannelByID(verificationChannel).getFullMessageHistory.parallelStream().filter(_.getContent.contains(event.getAuthor.getStringID)).collect(Collectors.toList[IMessage]).isEmpty) {
-          val args = event.getMessage.getContent.split("\\s+")
+  override def handle(e: MessageReceivedEvent): Unit = {
+    if (e.getChannel.isPrivate && e.getMessage.getContent.startsWith("-verify")) {
+      if (Main.client.getChannelByID(verificationChannel).getGuild.getUsers.contains(e.getAuthor)) {
+        if (Main.client.getChannelByID(verificationChannel).getFullMessageHistory.parallelStream().filter(_.getContent.contains(e.getAuthor.getStringID)).collect(Collectors.toList[IMessage]).isEmpty) {
+          val args = e.getMessage.getContent.split("\\s+")
           if (args.length == 4) {
             val first = args(1).capitalize
             val last = args(2).capitalize
             val github = args(3)
-            Main.client.getChannelByID(verificationChannel).getGuild.setUserNickname(event.getAuthor, first + " " + last + " (" + github + ")")
+            Main.client.getChannelByID(verificationChannel).getGuild.setUserNickname(e.getAuthor, first + " " + last + " (" + github + ")")
             val url = new URL("https://github.com/")
             val connection = url.openConnection.asInstanceOf[HttpURLConnection]
             connection.setRequestMethod("GET")
             connection.connect()
             connection.getResponseCode match {
-              case 404 => event.getMessage.reply("This does not seem to be a valid GitHub username.")
+              case 404 => e.getMessage.reply("This does not seem to be a valid GitHub username.")
               case 200 =>
                 val mb = new MessageBuilder(Main.client)
                 mb.withChannel(verificationChannel)
-                mb.appendContent(event.getAuthor.getStringID)
+                mb.appendContent(e.getAuthor.getStringID)
                 mb.appendContent("\n\n`")
                 mb.appendContent(first)
                 mb.appendContent(" ")
@@ -65,16 +65,16 @@ class PMListener extends IListener[MessageReceivedEvent] {
                 RequestBuffer.request(() => m.addReaction("\uD83C\uDD70")).get()
                 RequestBuffer.request(() => m.addReaction("❎")).get()
                 RequestBuffer.request(() => m.addReaction("✅")).get()
-              case _ => event.getMessage.reply("Something went wrong, sorry. Try again in about 30 minutes.")
+              case _ => e.getMessage.reply("Something went wrong, sorry. Try again in about 30 minutes.")
             }
           } else {
-            event.getMessage.reply("Wrong amount of arguments. `-verify [first name] [last name] [github username]`")
+            e.getMessage.reply("Wrong amount of arguments. `-verify [first name] [last name] [github username]`")
           }
         } else {
-          event.getMessage.reply("You are still in the verification queue! Wait patiently :)")
+          e.getMessage.reply("You are still in the verification queue! Wait patiently :)")
         }
       } else {
-        event.getMessage.reply("You're not in the LEAGUE server. Here's an invite: https://discord.gg/Zyj4AN8")
+        e.getMessage.reply("You're not in the LEAGUE server. Here's an invite: https://discord.gg/Zyj4AN8")
       }
     }
   }

@@ -3,7 +3,7 @@ package com.tsunderebug.leaguebot.listener
 import java.net.{HttpURLConnection, URL}
 import java.util.stream.Collectors
 
-import com.tsunderebug.leaguebot.Main
+import com.tsunderebug.leaguebot.{ID, Main}
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.handle.obj.IMessage
@@ -13,8 +13,6 @@ import sx.blah.discord.util.{MessageBuilder, RequestBuffer}
   * Created by aprim on 5/30/2017.
   */
 class PMListener extends IListener[MessageReceivedEvent] {
-
-  val verificationChannel: Long = 319259152071524352L
 
   val names: Map[Int, String] = Map(
     0 -> ":zero:",
@@ -31,14 +29,14 @@ class PMListener extends IListener[MessageReceivedEvent] {
 
   override def handle(e: MessageReceivedEvent): Unit = {
     if (e.getChannel.isPrivate && e.getMessage.getContent.startsWith("-verify")) {
-      if (Main.client.getChannelByID(verificationChannel).getGuild.getUsers.contains(e.getAuthor)) {
-        if (Main.client.getChannelByID(verificationChannel).getFullMessageHistory.parallelStream().filter(_.getContent.contains(e.getAuthor.getStringID)).collect(Collectors.toList[IMessage]).isEmpty) {
+      if (Main.client.getChannelByID(ID.verificationChannel).getGuild.getUsers.contains(e.getAuthor)) {
+        if (Main.client.getChannelByID(ID.verificationChannel).getFullMessageHistory.parallelStream().filter(_.getContent.contains(e.getAuthor.getStringID)).collect(Collectors.toList[IMessage]).isEmpty) {
           val args = e.getMessage.getContent.split("\\s+")
           if (args.length == 4) {
             val first = args(1).capitalize
             val last = args(2).capitalize
             val github = args(3)
-            Main.client.getChannelByID(verificationChannel).getGuild.setUserNickname(e.getAuthor, first + " " + last + " (" + github + ")")
+            Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first + " " + last + " (" + github + ")")
             val url = new URL("https://github.com/")
             val connection = url.openConnection.asInstanceOf[HttpURLConnection]
             connection.setRequestMethod("GET")
@@ -47,7 +45,7 @@ class PMListener extends IListener[MessageReceivedEvent] {
               case 404 => e.getMessage.reply("This does not seem to be a valid GitHub username.")
               case 200 =>
                 val mb = new MessageBuilder(Main.client)
-                mb.withChannel(verificationChannel)
+                mb.withChannel(ID.verificationChannel)
                 mb.appendContent(e.getAuthor.getStringID)
                 mb.appendContent("\n\n`")
                 mb.appendContent(first)

@@ -1,6 +1,6 @@
 package com.tsunderebug.leaguebot.listener
 
-import com.tsunderebug.leaguebot.Main
+import com.tsunderebug.leaguebot.{ID, Main}
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent
 import sx.blah.discord.util.MessageBuilder
@@ -10,10 +10,8 @@ import sx.blah.discord.util.MessageBuilder
   */
 class UserJoinListener extends IListener[UserJoinEvent] {
 
-  val unverifiedRole: Long = 319259365662261250L
-
   override def handle(e: UserJoinEvent): Unit = {
-    e.getUser.addRole(Main.client.getRoleByID(unverifiedRole))
+    e.getUser.addRole(Main.client.getRoleByID(ID.unverifiedRole))
     val mb = new MessageBuilder(Main.client)
     mb.withChannel(e.getUser.getOrCreatePMChannel())
     mb.withContent("Heyo! You will have to be verified by LEAGUE teachers before you can talk in the channels.\n\n" +

@@ -1,6 +1,6 @@
 package com.tsunderebug.leaguebot.listener
 
-import com.tsunderebug.leaguebot.Main
+import com.tsunderebug.leaguebot.{ID, Main}
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.guild.channel.message.reaction.ReactionEvent
 import sx.blah.discord.handle.obj.Permissions
@@ -13,33 +13,16 @@ import scala.collection.JavaConverters._
   */
 class VerificationReactionListiner extends IListener[ReactionEvent] {
 
-  val verificationChannel: Long = 319259152071524352L
-  val unverifiedRole: Long = 319259365662261250L
-  val roles: Map[String, Long] = Map(
-    "zero" -> 318508185369706506L,
-    "one" -> 318508854357000193L,
-    "two" -> 318509168065773568L,
-    "three" -> 318509134821457920L,
-    "four" -> 318509105268654081L,
-    "five" -> 318509070707589120L,
-    "six" -> 318509030597328898L,
-    "seven" -> 318508996308893702L,
-    "eight" -> 318508958333665291L,
-    "nine" -> 318508911055339520L,
-    "regional_indicator_t" -> 318509238529949696L,
-    "a" -> 318509321996730370L
-  )
-
   override def handle(e: ReactionEvent): Unit = {
-    if (!e.getUser.isBot && e.getMessage.getChannel.getLongID == verificationChannel) {
+    if (!e.getUser.isBot && e.getMessage.getChannel.getLongID == ID.verificationChannel) {
       val u = Main.client.getUserByID(e.getMessage.getContent.substring(0, e.getMessage.getContent.indexOf('\n')).toLong)
       val r = e.getReaction.getUnicodeEmoji
       if (r.getUnicode == "✅") {
-        u.removeRole(Main.client.getRoleByID(unverifiedRole))
+        u.removeRole(Main.client.getRoleByID(ID.unverifiedRole))
         e.getMessage.getReactions.asScala.filter(_.getCount > 1).foreach(r => {
-          val e = r.getUnicodeEmoji.getAliases.asScala.find(roles.contains).orNull
+          val e = r.getUnicodeEmoji.getAliases.asScala.find(ID.roles.contains).orNull
           if (e != null) {
-            u.addRole(Main.client.getRoleByID(roles(e)))
+            u.addRole(Main.client.getRoleByID(ID.roles(e)))
           }
         })
         e.getMessage.delete()

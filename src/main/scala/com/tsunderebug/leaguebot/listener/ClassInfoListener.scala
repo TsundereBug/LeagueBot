@@ -14,7 +14,7 @@ import sx.blah.discord.util.EmbedBuilder
   */
 class ClassInfoListener extends IListener[MessageReceivedEvent] {
 
-  val classesURL = "https://classes.jointheleague.org/post.json"
+  val classesURL = "https://dj-1-dot-jtlclasstracker.appspot.com/post.json"
 
   override def handle(e: MessageReceivedEvent): Unit = {
     if(e.getMessage.getContent.startsWith("-class")) {
@@ -28,7 +28,7 @@ class ClassInfoListener extends IListener[MessageReceivedEvent] {
       if(e.getMessage.getContent.split("\\s+").length > 1) {
         try {
           val cNum = e.getMessage.getContent.split("\\s+")(1).toInt
-          val post = classesURL + "?class=" + cNum
+          val post = classesURL + "?classnum=" + cNum
           val r = new InputStreamReader(new URL(post).openStream())
           val c = gson.fromJson(r, classOf[JTLClass])
           r.close()

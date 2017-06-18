@@ -17,7 +17,8 @@ object Main {
     .registerListener(new PMListener)
     .registerListener(new VerificationReactionListiner)
     .registerListener(new TeamListener)
-//    .registerListener(new ClassInfoListener)
+    .registerListener(new ClassInfoListener)
+    .registerListener(new KillListener)
     .build()
 
   def main(args: Array[String]): Unit = {

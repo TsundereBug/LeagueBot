@@ -5,7 +5,7 @@ version := "1.0"
 scalaVersion := "2.12.2"
 
 libraryDependencies ++= Seq(
-  "com.github.austinv11" % "Discord4J" % "9d7f18b",
+  "com.github.austinv11" % "Discord4J" % "4c6bf91",
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.google.code.gson" % "gson" % "2.8.1"
 )

@@ -7,7 +7,7 @@ import com.tsunderebug.leaguebot.{ID, Main}
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.handle.obj.IMessage
-import sx.blah.discord.util.{MessageBuilder, RequestBuffer}
+import sx.blah.discord.util.{DiscordException, MessageBuilder, RequestBuffer}
 
 /**
   * Created by aprim on 5/30/2017.
@@ -32,11 +32,27 @@ class PMListener extends IListener[MessageReceivedEvent] {
       if (Main.client.getChannelByID(ID.verificationChannel).getGuild.getUsers.contains(e.getAuthor)) {
         if (Main.client.getChannelByID(ID.verificationChannel).getFullMessageHistory.parallelStream().filter(_.getContent.contains(e.getAuthor.getStringID)).collect(Collectors.toList[IMessage]).isEmpty) {
           val args = e.getMessage.getContent.split("\\s+")
-          if (args.length == 4) {
+          if (args.length >= 4) {
             val first = args(1).capitalize
             val last = args(2).capitalize
             val github = args(3)
-            Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first + " " + last + " (" + github + ")")
+            val additional = args.drop(4)
+            try {
+              Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first + " " + last + " (" + github + ")")
+            } catch {
+              case _: DiscordException =>
+                try {
+                  Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first + last + "(" + github + ")")
+                } catch {
+                  case _: DiscordException =>
+                    try {
+                      Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first.head + ". " + last + " (" + github + ")")
+                    } catch {
+                      case _: DiscordException =>
+                        Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first + last.head + "(" + github + ")")
+                    }
+                }
+            }
             val url = new URL("https://github.com/")
             val connection = url.openConnection.asInstanceOf[HttpURLConnection]
             connection.setRequestMethod("GET")
@@ -57,6 +73,7 @@ class PMListener extends IListener[MessageReceivedEvent] {
                 mb.appendContent("Please verify that their GitHub is https://github.com/")
                 mb.appendContent(github)
                 mb.appendContent(" or react with ❎ and send them a PM.")
+                mb.appendContent("\n\nAdditional info: " + additional.mkString(" "))
                 val m = mb.send()
                 for (i <- 0 until names.keySet.size) RequestBuffer.request(() => m.addReaction(names(i))).get()
                 RequestBuffer.request(() => m.addReaction("\uD83C\uDDF9")).get()
@@ -66,7 +83,7 @@ class PMListener extends IListener[MessageReceivedEvent] {
               case _ => e.getMessage.reply("Something went wrong, sorry. Try again in about 30 minutes.")
             }
           } else {
-            e.getMessage.reply("Wrong amount of arguments. `-verify [first name] [last name] [github username]`")
+            e.getMessage.reply("Wrong amount of arguments. `-verify [first name] [last name] [github username] [additional info]`. Please include your level in additional info.")
           }
         } else {
           e.getMessage.reply("You are still in the verification queue! Wait patiently :)")

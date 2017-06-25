@@ -15,7 +15,8 @@ class VerificationReactionListiner extends IListener[ReactionEvent] {
 
   override def handle(e: ReactionEvent): Unit = {
     if (!e.getUser.isBot && e.getMessage.getChannel.getLongID == ID.verificationChannel) {
-      val u = Main.client.getUserByID(e.getMessage.getContent.substring(0, e.getMessage.getContent.indexOf('\n')).toLong)
+      val id = e.getMessage.getContent.substring(0, e.getMessage.getContent.indexOf('\n')).toLong
+      val u = Main.client.getUserByID(id)
       val r = e.getReaction.getUnicodeEmoji
       if (r.getUnicode == "✅") {
         u.removeRole(Main.client.getRoleByID(ID.unverifiedRole))
@@ -28,6 +29,7 @@ class VerificationReactionListiner extends IListener[ReactionEvent] {
         e.getMessage.delete()
       } else if (r.getUnicode == "❎") {
         e.getGuild.kickUser(u, "Failed verification")
+        e.getMessage.delete()
       } else if (r.getUnicode == "\uD83C\uDD70" && !e.getUser.getPermissionsForGuild(e.getGuild).contains(Permissions.ADMINISTRATOR)) {
         RequestBuffer.request(() => e.getMessage.removeReaction(e.getUser, e.getReaction))
       }

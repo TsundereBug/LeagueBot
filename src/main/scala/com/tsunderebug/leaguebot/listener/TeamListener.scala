@@ -38,6 +38,7 @@ class TeamListener extends IListener[MessageReceivedEvent] {
       e.getMessage.getAuthor.removeRole(r)
       if(e.getGuild.getUsersByRole(r).isEmpty) {
         e.getChannel.delete()
+        r.delete()
       }
     }
   }

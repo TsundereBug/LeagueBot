@@ -1,6 +1,6 @@
 package com.tsunderebug.leaguebot.listener
 
-import java.io.InputStreamReader
+import java.io.{IOException, InputStreamReader}
 import java.net.URL
 
 import com.google.gson.Gson
@@ -14,7 +14,7 @@ import sx.blah.discord.util.EmbedBuilder
   */
 class ClassInfoListener extends IListener[MessageReceivedEvent] {
 
-  val classesURL = "https://dj-1-dot-jtlclasstracker.appspot.com/post.json"
+  val classesURL = "https://ac-2-dot-jtlclasstracker.appspot.com/post.json"
 
   override def handle(e: MessageReceivedEvent): Unit = {
     if(e.getMessage.getContent.startsWith("-class")) {
@@ -29,29 +29,33 @@ class ClassInfoListener extends IListener[MessageReceivedEvent] {
         try {
           val cNum = e.getMessage.getContent.split("\\s+")(1).toInt
           val post = classesURL + "?classnum=" + cNum
-          val r = new InputStreamReader(new URL(post).openStream())
-          val c = gson.fromJson(r, classOf[JTLClass])
-          r.close()
+          try {
+            val r = new InputStreamReader(new URL(post).openStream())
+            val c = gson.fromJson(r, classOf[JTLClass])
+            r.close()
 
-          val eb = new EmbedBuilder
-          val title = c.teachers.mkString(" and ") + "'s Level " + c.level + " class"
-          val field = "Takes place " + c.time + " at " + c.location + "\n" + (if(!c.helpers.isEmpty) {
-            "_Helpers:_\n" + c.helpers.mkString("\n") + "\n"
-          }) +
-          "_Students:_\n" + c.students.mkString("\n")
-          eb.appendField(title, field, false)
-          for(i <- 0 until Math.min(c.days.length, 5)) {
-            eb.appendField(c.days(i).date + " - Rated " + c.days(i).rating + "/5",
-              "_Assigned:_\n" + c.days(i).assignments.mkString("\n") + "\n" +
-              "_Planned:_\n" + c.days(i).planned.mkString("\n"),
-              true)
+            val eb = new EmbedBuilder
+            eb.setLenient(false)
+            val title = c.teachers.mkString(" and ") + "'s Level " + c.level + " class"
+            eb.withTitle(title)
+            if (!c.helpers.isEmpty) eb.appendField("Helpers:", c.helpers.mkString("\n"), true)
+            eb.appendField("Students:", c.students.mkString("\n"), true)
+            val role = e.getGuild.getRolesByName("Level " + c.level).get(0)
+            eb.withColor(role.getColor)
+            for (i <- 0 until Math.min(c.days.length, 5)) {
+              eb.appendField(c.days(i).date,
+                c.days(i).assignments,
+                true)
+            }
+            e.getChannel.sendMessage(eb.build())
+          } catch {
+            case _: IOException => e.getChannel.sendMessage("That's not a valid class number!")
           }
-          e.getChannel.sendMessage(eb.build())
         } catch {
-          case _: NumberFormatException => e.getMessage.reply("That's not a valid number! Usage: `-class {classnum}`. Use `-class` to see all of your classes.")
+          case _: NumberFormatException => e.getMessage.reply("That's not a valid class number! Usage: `-class {classnum}`. Use `-class` to see all of your classes.")
         }
       } else {
-        val post = classesURL + "?name=" + name + (level match {
+        val post = classesURL + "?name=" + name.replaceAll(" ", "%20") + (level match {
           case s if s >= 0 => "&level=" + s
           case -1 => ""
         })

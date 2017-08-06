@@ -83,7 +83,7 @@ class PMListener extends IListener[MessageReceivedEvent] {
               case _ => e.getMessage.reply("Something went wrong, sorry. Try again in about 30 minutes.")
             }
           } else {
-            e.getMessage.reply("Wrong amount of arguments. `-verify [first name] [last name] [github username] [additional info]`. Please include your level in additional info.")
+            e.getMessage.reply("Wrong amount of arguments. `-verify [first name] [last name] [github username] [additional info]`. **Please include your level, levels you TA, and/or levels you teach in additional info.**")
           }
         } else {
           e.getMessage.reply("You are still in the verification queue! Wait patiently :)")

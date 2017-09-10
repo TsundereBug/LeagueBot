@@ -4,6 +4,7 @@ import java.net.{HttpURLConnection, URL}
 import java.util.stream.Collectors
 
 import com.tsunderebug.leaguebot.{ID, Main}
+import com.vdurmont.emoji.EmojiManager
 import sx.blah.discord.api.events.IListener
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent
 import sx.blah.discord.handle.obj.IMessage
@@ -75,11 +76,11 @@ class PMListener extends IListener[MessageReceivedEvent] {
                 mb.appendContent(" or react with ❎ and send them a PM.")
                 mb.appendContent("\n\nAdditional info: " + additional.mkString(" "))
                 val m = mb.send()
-                for (i <- 0 until names.keySet.size) RequestBuffer.request(() => m.addReaction(names(i))).get()
-                RequestBuffer.request(() => m.addReaction("\uD83C\uDDF9")).get()
-                RequestBuffer.request(() => m.addReaction("\uD83C\uDD70")).get()
-                RequestBuffer.request(() => m.addReaction("❎")).get()
-                RequestBuffer.request(() => m.addReaction("✅")).get()
+                for (i <- 0 until names.keySet.size) RequestBuffer.request(() => m.addReaction(EmojiManager.getForAlias(names(i).drop(1).dropRight(1)))).get()
+                RequestBuffer.request(() => m.addReaction(EmojiManager.getByUnicode("\uD83C\uDDF9"))).get()
+                RequestBuffer.request(() => m.addReaction(EmojiManager.getForAlias("a"))).get()
+                RequestBuffer.request(() => m.addReaction(EmojiManager.getForAlias("negative_squared_cross_mark"))).get()
+                RequestBuffer.request(() => m.addReaction(EmojiManager.getForAlias("white_check_mark"))).get()
               case _ => e.getMessage.reply("Something went wrong, sorry. Try again in about 30 minutes.")
             }
           } else {

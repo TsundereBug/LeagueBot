@@ -13,7 +13,6 @@ object Main {
   val client: IDiscordClient = new ClientBuilder()
     .withToken(new BufferedReader(new InputStreamReader(getClass.getResourceAsStream("/token"))).readLine())
     .registerListener(new ReadyListener)
-    .registerListener(new UserJoinListener)
     .registerListener(new PMListener)
     .registerListener(new VerificationReactionListiner)
     .registerListener(new TeamListener)

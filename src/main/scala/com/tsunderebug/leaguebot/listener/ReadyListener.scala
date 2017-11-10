@@ -11,8 +11,8 @@ import sx.blah.discord.handle.impl.events.ReadyEvent
 class ReadyListener extends IListener[ReadyEvent] {
 
   val green = 0
-  val yellow = 125
-  val red = 200
+  val yellow = 100
+  val red = 150
 
   override def handle(e: ReadyEvent): Unit = {
     val spe = new ScheduledThreadPoolExecutor(1)

@@ -3,7 +3,6 @@ package com.tsunderebug.leaguebot
 object ID {
 
   val verificationChannel: Long = 319259152071524352L
-  val unverifiedRole: Long = 319259365662261250L
   val roles: Map[String, Long] = Map(
     "zero" -> 318508185369706506L,
     "one" -> 318508854357000193L,

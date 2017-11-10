@@ -32,12 +32,12 @@ class PMListener extends IListener[MessageReceivedEvent] {
     if (e.getChannel.isPrivate && e.getMessage.getContent.startsWith("-verify")) {
       if (Main.client.getChannelByID(ID.verificationChannel).getGuild.getUsers.contains(e.getAuthor)) {
         if (Main.client.getChannelByID(ID.verificationChannel).getFullMessageHistory.parallelStream().filter(_.getContent.contains(e.getAuthor.getStringID)).collect(Collectors.toList[IMessage]).isEmpty) {
-          val args = e.getMessage.getContent.split("\\s+")
+          val args = e.getMessage.getFormattedContent.split("\\s+")
           if (args.length >= 4) {
-            val first = args(1).capitalize
-            val last = args(2).capitalize
-            val github = args(3)
-            val additional = args.drop(4)
+            val first = args(1).replaceAll("""[\[\]]""", "").capitalize
+            val last = args(2).replaceAll("""[\[\]]""", "").capitalize
+            val github = args(3).replaceAll("""[\[\]]""", "")
+            val additional = args.drop(4).mkString(" ").replaceAll("""[\[\]]""", "")
             try {
               Main.client.getChannelByID(ID.verificationChannel).getGuild.setUserNickname(e.getAuthor, first + " " + last + " (" + github + ")")
             } catch {
@@ -92,6 +92,19 @@ class PMListener extends IListener[MessageReceivedEvent] {
       } else {
         e.getMessage.reply("You're not in the LEAGUE server. Here's an invite: https://discord.gg/Zyj4AN8")
       }
+    } else if(e.getMessage.getContent.startsWith("-verifyhelp")) {
+      e.getMessage.reply(
+        """
+          |you can verify youreself as a LEAGUE student by following these instructions:
+          |
+          |1. Open a DM with me, <@319254008105664512>
+          |2. In said DM, run this command (with the correct info):
+          |`-verify [first name] [last name] [github name] [levels in/teach/ta]`
+          |For example, if my name is John Smith, my github is <https://github.com/jsmith> and I am a teacher for level 4, 5, and 6, I would run
+          |`-verify John Smith jsmith I teach 4, 5, 6`
+          |
+          |Failing verification will kick you from the server, but never fear! You can rejoin with https://discord.gg/league
+        """.stripMargin)
     }
   }
 

@@ -20,11 +20,10 @@ class VerificationReactionListiner extends IListener[ReactionEvent] {
       val u = Main.client.getUserByID(id)
       val r: String = e.getReaction.getEmoji.toString
       if (r == "✅") {
-        u.removeRole(Main.client.getRoleByID(ID.unverifiedRole))
         e.getMessage.getReactions.asScala.filter(_.getCount > 1).foreach(r => {
-          val e = EmojiManager.getByUnicode(r.getEmoji.toString).getAliases.asScala.find(ID.roles.contains).orNull
+          val e = EmojiManager.getByUnicode(r.getEmoji.getName).getAliases.asScala.find(ID.roles.contains).orNull
           if (e != null) {
-            u.addRole(Main.client.getRoleByID(ID.roles(e)))
+            RequestBuffer.request(() => u.addRole(Main.client.getRoleByID(ID.roles(e))))
           }
         })
         e.getMessage.delete()
